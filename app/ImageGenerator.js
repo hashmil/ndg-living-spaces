@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Replicate from "replicate";
 
 const replicate = new Replicate({
@@ -45,6 +45,16 @@ export default function ImageGenerator() {
   const [loading, setLoading] = useState(false);
   const [buttonText, setButtonText] = useState("Generate");
   const [status, setStatus] = useState("");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const getRandomIndex = (array) =>
+        Math.floor(Math.random() * array.length);
+      setStyleIndex(getRandomIndex(styles));
+      setAreaIndex(getRandomIndex(areas));
+      setLightingIndex(getRandomIndex(lighting));
+    }
+  }, []);
 
   const cycleStyle = () => setStyleIndex((styleIndex + 1) % styles.length);
   const cycleArea = () => setAreaIndex((areaIndex + 1) % areas.length);
