@@ -112,7 +112,7 @@ export default function ImageGenerator() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-black text-white">
-      <div className="relative w-[85vw] h-[85vw] sm:w-[70vw] sm:h-[70vw] bg-gray-800 mb-4 flex items-center justify-center border border-gray-700">
+      <div className="relative w-[85vw] h-[85vw] sm:w-[60vh] sm:h-[60vh] bg-gray-800 mb-4 flex items-center justify-center border border-gray-700">
         {loading && (
           <>
             <div className="spinner"></div>
