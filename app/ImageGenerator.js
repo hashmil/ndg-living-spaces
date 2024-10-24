@@ -101,12 +101,14 @@ export default function ImageGenerator() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-      <div className="relative w-[85vw] h-[85vw] sm:w-[70vw] sm:h-[70vw] bg-gray-300 mb-4 flex items-center justify-center">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-black text-white">
+      <div className="relative w-[85vw] h-[85vw] sm:w-[70vw] sm:h-[70vw] bg-gray-800 mb-4 flex items-center justify-center border border-gray-700">
         {loading && (
           <>
             <div className="spinner"></div>
-            <div className="absolute bottom-4 text-black">{status}</div>
+            <div className="absolute bottom-4 text-white bg-black bg-opacity-75 px-2 py-1 rounded">
+              {status}
+            </div>
           </>
         )}
         {imageUrl && (
@@ -120,25 +122,25 @@ export default function ImageGenerator() {
       <div className="flex flex-col sm:flex-row items-center space-x-2 mb-4">
         <button
           onClick={cycleStyle}
-          className="px-2 py-1 border rounded text-black">
+          className="px-2 py-1 border border-white rounded text-white hover:bg-gray-700">
           {styles[styleIndex]}
         </button>
-        <span className="text-black">style</span>
+        <span className="text-white">style</span>
         <button
           onClick={cycleArea}
-          className="px-2 py-1 border rounded text-black">
+          className="px-2 py-1 border border-white rounded text-white hover:bg-gray-700">
           {areas[areaIndex]}
         </button>
-        <span className="text-black">with</span>
+        <span className="text-white">with</span>
         <button
           onClick={cycleLighting}
-          className="px-2 py-1 border rounded text-black">
+          className="px-2 py-1 border border-white rounded text-white hover:bg-gray-700">
           {lighting[lightingIndex]}
         </button>
       </div>
       <button
         onClick={handleGenerate}
-        className="px-4 py-2 bg-blue-500 text-white rounded">
+        className="px-4 py-2 bg-white text-black rounded hover:bg-gray-300">
         {buttonText}
       </button>
     </div>
