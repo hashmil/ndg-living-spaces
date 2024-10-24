@@ -7,9 +7,33 @@ const replicate = new Replicate({
   auth: process.env.REPLICATE_API_TOKEN,
 });
 
-const styles = ["Bohemian", "Modern", "Minimalist"];
+// Add more styles and lighting options here
+const styles = [
+  "Bohemian",
+  "Modern",
+  "Minimalist",
+  "Industrial",
+  "Scandinavian",
+  "Rustic",
+  "Traditional",
+  "Mid-Century Modern",
+  "Contemporary",
+  "Art Deco",
+];
+
 const areas = ["living room", "bedroom", "kitchen"];
-const lighting = ["sunlight streaming in", "soft lighting", "bright lighting"];
+
+const lighting = [
+  "sunlight streaming in",
+  "soft lighting",
+  "bright lighting",
+  "candlelight",
+  "neon lighting",
+  "natural light",
+  "ambient lighting",
+  "task lighting",
+  "accent lighting",
+];
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -74,7 +98,7 @@ export default function ImageGenerator() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-      <div className="relative w-[70vw] h-[70vw] bg-gray-300 mb-4 flex items-center justify-center">
+      <div className="relative w-[85vw] h-[85vw] sm:w-[70vw] sm:h-[70vw] bg-gray-300 mb-4 flex items-center justify-center">
         {loading && <div className="spinner"></div>}
         {imageUrl && (
           <img
@@ -84,7 +108,7 @@ export default function ImageGenerator() {
           />
         )}
       </div>
-      <div className="flex items-center space-x-2 mb-4">
+      <div className="flex flex-col sm:flex-row items-center space-x-2 mb-4">
         <button
           onClick={cycleStyle}
           className="px-2 py-1 border rounded text-black">
