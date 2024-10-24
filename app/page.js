@@ -1,9 +1,10 @@
 import ImageGenerator from "./ImageGenerator";
+import PasswordProtect from "../components/PasswordProtect";
 
-export default function Home() {
+export default function HomePage() {
   return (
-    <main>
+    <PasswordProtect>
       <ImageGenerator />
-    </main>
+    </PasswordProtect>
   );
 }
