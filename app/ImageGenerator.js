@@ -18,6 +18,8 @@ export default function ImageGenerator() {
   const [areaIndex, setAreaIndex] = useState(0);
   const [lightingIndex, setLightingIndex] = useState(0);
   const [imageUrl, setImageUrl] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [buttonText, setButtonText] = useState("Generate");
 
   const cycleStyle = () => setStyleIndex((styleIndex + 1) % styles.length);
   const cycleArea = () => setAreaIndex((areaIndex + 1) % areas.length);
@@ -26,6 +28,9 @@ export default function ImageGenerator() {
 
   const handleGenerate = async () => {
     const prompt = `a movie still of a ${styles[styleIndex]} style ${areas[areaIndex]} with ${lighting[lightingIndex]}, a small TOK coffee machine on a table, 8k, high quality`;
+
+    setLoading(true);
+    setButtonText("Brewing your image ☕ ...");
 
     try {
       const response = await fetch("/api/predictions", {
@@ -41,25 +46,14 @@ export default function ImageGenerator() {
       }
 
       let prediction = await response.json();
-      console.log("Prediction response:", prediction);
-
-      if (!prediction.id) {
-        throw new Error("Prediction ID is missing");
-      }
+      console.log("Full prediction response:", prediction);
 
       while (
         prediction.status !== "succeeded" &&
         prediction.status !== "failed"
       ) {
-        await sleep(1000);
+        await sleep(1000); // Wait for 1 second before polling again
         const statusResponse = await fetch(`/api/predictions/${prediction.id}`);
-
-        if (!statusResponse.ok) {
-          const errorText = await statusResponse.text();
-          console.error("Error fetching prediction status:", errorText);
-          throw new Error("Failed to fetch prediction status");
-        }
-
         prediction = await statusResponse.json();
         console.log("Updated prediction:", prediction);
       }
@@ -68,9 +62,13 @@ export default function ImageGenerator() {
         setImageUrl(prediction.output[0]);
       } else {
         console.error("No output in prediction response");
+        setImageUrl(null); // Optionally reset the image URL if there's no output
       }
     } catch (error) {
       console.error("Error generating image:", error);
+    } finally {
+      setLoading(false);
+      setButtonText("Generate");
     }
   };
 
@@ -107,8 +105,9 @@ export default function ImageGenerator() {
       <button
         onClick={handleGenerate}
         className="px-4 py-2 bg-blue-500 text-white rounded">
-        Generate
+        {buttonText}
       </button>
+      {loading && <div className="spinner"></div>}
     </div>
   );
 }

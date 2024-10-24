@@ -9,7 +9,7 @@ export async function POST(request) {
   const { prompt } = await request.json();
 
   const options = {
-    version: "fa1a58cbbacf7740f31b903bf8851d70e2e3efd5c1e392d948be882b075f0c2d", // Use the specific model version
+    version: "fa1a58cbbacf7740f31b903bf8851d70e2e3efd5c1e392d948be882b075f0c2d",
     input: {
       prompt,
       width: 1024,
