@@ -74,7 +74,8 @@ export default function ImageGenerator() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-      <div className="w-96 h-96 bg-gray-300 mb-4">
+      <div className="relative w-[70vw] h-[70vw] bg-gray-300 mb-4 flex items-center justify-center">
+        {loading && <div className="spinner"></div>}
         {imageUrl && (
           <img
             src={imageUrl}
@@ -107,7 +108,6 @@ export default function ImageGenerator() {
         className="px-4 py-2 bg-blue-500 text-white rounded">
         {buttonText}
       </button>
-      {loading && <div className="spinner"></div>}
     </div>
   );
 }

@@ -27,7 +27,7 @@ body {
   width: 24px;
   height: 24px;
   animation: spin 1s linear infinite;
-  margin: 10px auto;
+  position: absolute;
 }
 
 @keyframes spin {
