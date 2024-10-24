@@ -44,6 +44,7 @@ export default function ImageGenerator() {
   const [imageUrl, setImageUrl] = useState(null);
   const [loading, setLoading] = useState(false);
   const [buttonText, setButtonText] = useState("Generate");
+  const [status, setStatus] = useState("");
 
   const cycleStyle = () => setStyleIndex((styleIndex + 1) % styles.length);
   const cycleArea = () => setAreaIndex((areaIndex + 1) % areas.length);
@@ -55,6 +56,7 @@ export default function ImageGenerator() {
 
     setLoading(true);
     setButtonText("Brewing your image ☕ ...");
+    setStatus("starting");
 
     try {
       const response = await fetch("/api/predictions", {
@@ -80,6 +82,8 @@ export default function ImageGenerator() {
         const statusResponse = await fetch(`/api/predictions/${prediction.id}`);
         prediction = await statusResponse.json();
         console.log("Updated prediction:", prediction);
+
+        setStatus(prediction.status); // Update status
       }
 
       if (prediction.output && prediction.output.length > 0) {
@@ -99,7 +103,12 @@ export default function ImageGenerator() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
       <div className="relative w-[85vw] h-[85vw] sm:w-[70vw] sm:h-[70vw] bg-gray-300 mb-4 flex items-center justify-center">
-        {loading && <div className="spinner"></div>}
+        {loading && (
+          <>
+            <div className="spinner"></div>
+            <div className="absolute bottom-4 text-black">{status}</div>
+          </>
+        )}
         {imageUrl && (
           <img
             src={imageUrl}
