@@ -115,64 +115,72 @@ export default function ImageGenerator() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-black text-white">
-      <div className="relative w-[85vw] h-[85vw] sm:w-[60vh] sm:h-[60vh] bg-gray-800 mb-4 flex items-center justify-center border border-gray-700">
-        {loading && (
-          <>
-            <div className="spinner"></div>
-            <div className="absolute bottom-4 text-white bg-black bg-opacity-75 px-2 py-1 rounded">
-              {status}
+    <div className="flex flex-col items-center justify-center min-h-screen p-4">
+      <div className="w-full max-w-4xl space-y-8">
+        {/* Image Container */}
+        <div className="glass-panel relative w-full aspect-square max-w-2xl mx-auto overflow-hidden">
+          {loading ? (
+            <div className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-50">
+              <div className="spinner"></div>
+              <div className="mt-4 text-white font-medium">{status}</div>
             </div>
-          </>
-        )}
-        {imageUrl && (
-          <img
-            src={imageUrl}
-            alt="Generated"
-            className="w-full h-full object-cover"
-          />
-        )}
-      </div>
-      <div className="flex flex-col sm:flex-row items-center space-x-2 mb-4">
-        <button
-          onClick={cycleStyle}
-          className="px-2 py-1 border border-white rounded text-white hover:bg-gray-700">
-          {styles[styleIndex]}
-        </button>
-        <span className="text-white">style</span>
-        <button
-          onClick={cycleArea}
-          className="px-2 py-1 border border-white rounded text-white hover:bg-gray-700">
-          {areas[areaIndex]}
-        </button>
-        <span className="text-white">with</span>
-        <button
-          onClick={cycleLighting}
-          className="px-2 py-1 border border-white rounded text-white hover:bg-gray-700">
-          {lighting[lightingIndex]}
-        </button>
-      </div>
-      <div className="flex space-x-2">
-        <button
-          onClick={randomizeOptions}
-          className="p-2 border border-white rounded text-white hover:bg-gray-700">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 800 701"
-            fill="none">
-            <path
-              d="M-3.90577e-05 550C-3.90577e-05 563.867 4.79996 575.867 14.4 586C24 596.134 36 600.934 50.4 600.401H100C134.133 600.401 166.667 593.734 197.6 580.4C228.533 567.067 254.933 549.2 276.8 526.8C298.667 504.4 316.533 477.734 330.4 446.8C344.267 415.867 350.933 383.6 350.4 350C350.4 308.934 364.8 273.734 393.6 244.4C422.4 215.067 457.867 200.4 500 200.4H600V250C600 261.2 603.2 270.8 609.6 278.8C616 286.8 623.2 292.667 631.2 296.4C639.2 300.134 648.533 301.2 659.2 299.6C669.867 298 678.667 293.467 685.6 286L785.6 186C795.733 175.334 800.533 163.334 800 150C799.467 136.667 794.667 124.934 785.6 114.8L685.6 14.8005C677.6 7.3338 668.533 2.80047 658.4 1.20047C648.267 -0.399531 638.933 0.667136 630.4 4.40047C621.867 8.1338 614.667 14.0005 608.8 22.0005C602.933 30.0005 600 39.3338 600 50.0005V100.4H500C466.4 100.4 434.133 107.067 403.2 120.4C372.267 133.734 345.6 151.334 323.2 173.2C300.8 195.067 282.933 221.734 269.6 253.2C256.267 284.667 249.867 316.934 250.4 350C250.4 391.6 235.733 427.067 206.4 456.4C177.067 485.734 141.6 500.401 100 500.401H50.4C36.5333 500.401 24.5333 505.2 14.4 514.8C4.26663 524.4 -0.533372 536.134 -3.90577e-05 550ZM-3.90577e-05 150.8C-3.90577e-05 164.667 4.79996 176.4 14.4 186C24 195.6 36 200.4 50.4 200.4H100C123.467 200.4 145.067 205.467 164.8 215.6C184.533 225.734 201.867 239.6 216.8 257.2C228 223.067 244.533 192.4 266.4 165.2C217.867 122 162.4 100.4 100 100.4H50.4C36.5333 100.4 24.5333 105.467 14.4 115.6C4.26663 125.734 -0.533372 137.467 -3.90577e-05 150.8ZM334.4 536.4C381.867 579.067 437.067 600.401 500 600.401H600V650.8C600 661.467 603.2 671.067 609.6 679.6C616 688.134 623.2 694 631.2 697.2C639.2 700.4 648.533 701.2 659.2 699.6C669.867 698 678.667 693.467 685.6 686L785.6 586C795.733 575.867 800.533 563.867 800 550C799.467 536.134 794.667 524.667 785.6 515.6L685.6 415.6C677.6 407.6 668.533 402.8 658.4 401.2C648.267 399.6 638.933 400.667 630.4 404.4C621.867 408.134 614.667 414.267 608.8 422.801C602.933 431.334 600 440.667 600 450.8V500.401H500C477.067 500.401 455.467 495.6 435.2 486C414.933 476.4 397.867 462.534 384 444.4C372.267 478.534 355.733 509.2 334.4 536.4Z"
-              fill="white"
+          ) : imageUrl ? (
+            <img
+              src={imageUrl}
+              alt="Generated"
+              className="w-full h-full object-cover"
             />
-          </svg>
-        </button>
-        <button
-          onClick={handleGenerate}
-          className="px-4 py-2 bg-white text-black rounded hover:bg-gray-300">
-          {buttonText}
-        </button>
+          ) : (
+            <div className="absolute inset-0 flex flex-col items-center justify-center text-white/60">
+              <svg
+                className="w-24 h-24 placeholder-icon"
+                fill="currentColor"
+                viewBox="0 0 24 24">
+                <path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              <p className="mt-4 text-lg font-medium">
+                Your image will appear here
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* Controls */}
+        <div className="glass-panel p-6 space-y-6">
+          <div className="flex flex-wrap gap-3 justify-center items-center text-white/80">
+            <button
+              onClick={cycleStyle}
+              className="px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 transition-all text-white border border-white/20">
+              {styles[styleIndex]}
+            </button>
+            <span>style</span>
+            <button
+              onClick={cycleArea}
+              className="px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 transition-all text-white border border-white/20">
+              {areas[areaIndex]}
+            </button>
+            <span>with</span>
+            <button
+              onClick={cycleLighting}
+              className="px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 transition-all text-white border border-white/20">
+              {lighting[lightingIndex]}
+            </button>
+          </div>
+
+          <div className="flex gap-4">
+            <button
+              onClick={randomizeOptions}
+              className="px-6 py-3 rounded-full bg-white/10 hover:bg-white/20 transition-all text-white border border-white/20">
+              Randomize
+            </button>
+            <button
+              onClick={handleGenerate}
+              disabled={loading}
+              className="flex-1 gradient-button text-white font-medium py-3 px-6 rounded-full shadow-lg disabled:opacity-50">
+              {buttonText}
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
