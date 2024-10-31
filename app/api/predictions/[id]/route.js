@@ -6,10 +6,17 @@ const replicate = new Replicate({
 });
 
 export async function GET(request) {
-  const url = new URL(request.url);
-  const id = url.pathname.split("/").pop(); // Extract the ID from the URL
-
   try {
+    const url = new URL(request.url);
+    const id = url.pathname.split("/").pop();
+
+    if (!id || id === "undefined") {
+      return NextResponse.json(
+        { detail: "Invalid prediction ID" },
+        { status: 400 }
+      );
+    }
+
     const prediction = await replicate.predictions.get(id);
 
     if (prediction?.error) {
