@@ -15,6 +15,29 @@ const celebrities = [
   "Andy Warhol",
 ];
 
+const celebrityStyles = {
+  "David Bowie":
+    "Futuristic kitchen interior, metallic surfaces, zigzag patterns, cosmic lighting, geometric shapes, space-age appliances, otherworldly atmosphere",
+  "Grace Jones":
+    "Bold geometric kitchen interior, high contrast black and white, avant-garde architecture, dramatic lighting, angular surfaces, minimalist luxury",
+  "Lady Gaga":
+    "Theatrical kitchen interior, dramatic crystal chandeliers, metallic accents, bold color pops, haute couture inspired fixtures, luxurious marble",
+  Prince:
+    "Purple-themed kitchen interior, velvet textures, gold accents, romantic lighting, ornate details, luxurious fixtures, mysterious ambiance",
+  Madonna:
+    "Pop art kitchen interior, bold colors, iconic art pieces, glamorous lighting, mix of vintage and modern, provocative design elements",
+  "Elton John":
+    "Flamboyant kitchen interior, crystal embellishments, piano-inspired elements, extravagant lighting fixtures, bold patterns, theatrical design",
+  "Audrey Hepburn":
+    "Elegant Parisian kitchen interior, classic black and white theme, refined details, sophisticated lighting, timeless fixtures, romantic atmosphere",
+  "Freddie Mercury":
+    "Opulent kitchen interior, rich textures, theatrical lighting, grand design elements, royal colors, dramatic architectural features",
+  Björk:
+    "Ethereal kitchen interior, organic shapes, nature-inspired elements, Nordic design, ethereal lighting, avant-garde fixtures, surreal atmosphere",
+  "Andy Warhol":
+    "Pop art kitchen interior, screen print inspired patterns, bold primary colors, factory-style elements, artistic lighting, industrial chic",
+};
+
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export default function ImageGenerator() {
@@ -38,7 +61,9 @@ export default function ImageGenerator() {
     setCelebrityIndex((celebrityIndex + 1) % celebrities.length);
 
   const handleGenerate = async () => {
-    const prompt = `A kitchen interior in ${celebrities[celebrityIndex]}'s iconic style. The space features their signature colors and design elements, with a small TOK coffee machine as centerpiece. Ultra-detailed, 8k quality.`;
+    const celebrity = celebrities[celebrityIndex];
+    const celebrityStyle = celebrityStyles[celebrity];
+    const prompt = `a black TOK Dolce Nestle Gusto coffee machine, on a kitchen counter, ${celebrityStyle}, photorealistic, ultra-detailed, 8k`;
 
     setLoading(true);
     setButtonText("Brewing your image ☕ ...");
@@ -53,39 +78,19 @@ export default function ImageGenerator() {
         body: JSON.stringify({ prompt }),
       });
 
+      const data = await response.json();
+      console.log("Response from API:", data);
+
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.detail || "Failed to create prediction");
+        throw new Error(data.error || `HTTP error! status: ${response.status}`);
       }
 
-      let prediction = await response.json();
-
-      while (
-        prediction.status !== "succeeded" &&
-        prediction.status !== "failed"
-      ) {
-        await sleep(1000);
-        const statusResponse = await fetch(`/api/predictions/${prediction.id}`);
-
-        if (!statusResponse.ok) {
-          const error = await statusResponse.json();
-          throw new Error(error.detail || "Failed to check prediction status");
-        }
-
-        prediction = await statusResponse.json();
-        console.log("Status update:", prediction);
-        setStatus(prediction.status);
+      if (!data.output?.[0]) {
+        throw new Error("No image URL in response");
       }
 
-      if (prediction.status === "failed") {
-        throw new Error("Image generation failed");
-      }
-
-      if (prediction.output && prediction.output.length > 0) {
-        setImageUrl(prediction.output[0]);
-      } else {
-        throw new Error("No output in prediction response");
-      }
+      setImageUrl(data.output[0]);
+      setStatus("succeeded");
     } catch (error) {
       console.error("Error generating image:", error);
       setStatus(`Error: ${error.message}`);

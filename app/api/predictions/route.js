@@ -1,52 +1,87 @@
 import { NextResponse } from "next/server";
-import Replicate from "replicate";
-
-const replicate = new Replicate({
-  auth: process.env.REPLICATE_API_TOKEN,
-});
+import fal from "@/utils/falClient";
 
 export async function POST(request) {
   try {
     const { prompt } = await request.json();
 
-    // Adjusted dimensions to be divisible by 8
-    const options = {
-      version:
-        "fa1a58cbbacf7740f31b903bf8851d70e2e3efd5c1e392d948be882b075f0c2d",
-      input: {
-        prompt,
-        width: 1024, // Already divisible by 8
-        height: 1816, // Adjusted from 1820 to be divisible by 8
-        refine: "no_refiner",
-        scheduler: "KarrasDPM",
-        lora_scale: 0.8,
-        num_outputs: 1,
-        guidance_scale: 7.5,
-        apply_watermark: true,
-        high_noise_frac: 0.89,
-        negative_prompt: "text, watermark, low quality",
-        prompt_strength: 0.8,
-        num_inference_steps: 25,
-      },
+    const input = {
+      prompt,
+      image_size: "portrait_16_9",
+      num_inference_steps: 28,
+      guidance_scale: 3.5,
+      num_images: 1,
+      enable_safety_checker: true,
+      output_format: "jpeg",
+      loras: [
+        {
+          path: "https://storage.googleapis.com/fal-flux-lora/f331225cc5394850a281837fd4be45de_pytorch_lora_weights.safetensors",
+          scale: 1,
+        },
+      ],
+      // lora_weights: {
+      //   path: "https://storage.googleapis.com/fal-flux-lora/f331225cc5394850a281837fd4be45de_pytorch_lora_weights.safetensors",
+      //   scale: 1,
+      // },
     };
 
-    console.log("Sending options to Replicate:", options);
-    const prediction = await replicate.predictions.create(options);
-    console.log("Received prediction response:", prediction);
+    console.log("Input configuration:", JSON.stringify(input, null, 2));
+    console.log(
+      "LoRA configuration:",
+      JSON.stringify(input.lora_weights, null, 2)
+    );
 
-    if (!prediction?.id) {
-      console.error("No prediction ID received:", prediction);
+    const result = await fal.subscribe("fal-ai/flux-lora", {
+      input,
+      logs: true,
+      onQueueUpdate: (update) => {
+        if (update.status === "IN_PROGRESS") {
+          console.log("Generation progress:");
+          update.logs
+            .map((log) => log.message)
+            .forEach((msg) => {
+              console.log(`- ${msg}`);
+              // Look for any LoRA-related messages
+              if (msg.toLowerCase().includes("lora")) {
+                console.log("LoRA-related message found:", msg);
+              }
+            });
+        }
+      },
+    });
+
+    console.log("Full FAL AI Response:", JSON.stringify(result.data, null, 2));
+    console.log("Request ID:", result.requestId);
+
+    if (!result?.data?.images?.[0]?.url) {
+      console.error("Invalid response structure from FAL AI:", result);
       return NextResponse.json(
-        { detail: "Failed to create prediction - no ID received" },
+        { error: "Failed to generate image - invalid response structure" },
         { status: 500 }
       );
     }
 
-    return NextResponse.json(prediction, { status: 201 });
+    return NextResponse.json({
+      status: "succeeded",
+      output: [result.data.images[0].url],
+    });
   } catch (error) {
-    console.error("Error creating prediction:", error);
+    console.error("Error in FAL AI generation:", error);
+    console.error("Error details:", {
+      name: error.name,
+      message: error.message,
+      response: error.response?.data,
+    });
+
+    if (error.response?.data) {
+      return NextResponse.json(
+        { error: error.response.data.message || "FAL AI service error" },
+        { status: error.response.status || 500 }
+      );
+    }
+
     return NextResponse.json(
-      { detail: error.message || "Failed to create prediction" },
+      { error: error.message || "Failed to generate image" },
       { status: 500 }
     );
   }
