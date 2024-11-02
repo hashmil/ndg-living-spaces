@@ -108,8 +108,8 @@ export default function ImageGenerator() {
           <div
             className="glass-panel relative overflow-hidden"
             style={{
-              height: "min(calc((100vw - 2rem) * 16/9), calc(100dvh - 12rem))",
-              width: "min(100%, calc((100dvh - 12rem) * 9/16))",
+              width: "min(100%, calc((100dvh - 12rem) * 9/16), 450px)",
+              aspectRatio: "9/16",
             }}>
             {loading ? (
               <div className="absolute inset-0 flex flex-col items-center justify-between bg-black bg-opacity-50">
