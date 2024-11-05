@@ -3,39 +3,40 @@
 import { useState, useEffect, useCallback } from "react";
 
 const celebrities = [
-  "David Bowie",
-  "Grace Jones",
-  "Lady Gaga",
-  "Prince",
-  "Madonna",
-  "Elton John",
-  "Audrey Hepburn",
-  "Freddie Mercury",
-  "Björk",
-  "Andy Warhol",
+  "Nojoud AlRumaihi",
+  "Yara Namlah",
+  "Hala Abdallah",
+  "Joelle Mardinian",
+  "Waad Alhammadi",
+  "Ahmad Daabas",
+  "Ahmed El-Sayed",
 ];
 
 const celebrityStyles = {
-  "David Bowie":
-    "Futuristic kitchen interior, metallic surfaces, zigzag patterns, cosmic lighting, geometric shapes, space-age appliances, otherworldly atmosphere",
-  "Grace Jones":
-    "Bold geometric kitchen interior, high contrast black and white, avant-garde architecture, dramatic lighting, angular surfaces, minimalist luxury",
-  "Lady Gaga":
-    "Theatrical kitchen interior, dramatic crystal chandeliers, metallic accents, bold color pops, haute couture inspired fixtures, luxurious marble",
-  Prince:
-    "Purple-themed kitchen interior, velvet textures, gold accents, romantic lighting, ornate details, luxurious fixtures, mysterious ambiance",
-  Madonna:
-    "Pop art kitchen interior, bold colors, iconic art pieces, glamorous lighting, mix of vintage and modern, provocative design elements",
-  "Elton John":
-    "Flamboyant kitchen interior, crystal embellishments, piano-inspired elements, extravagant lighting fixtures, bold patterns, theatrical design",
-  "Audrey Hepburn":
-    "Elegant Parisian kitchen interior, classic black and white theme, refined details, sophisticated lighting, timeless fixtures, romantic atmosphere",
-  "Freddie Mercury":
-    "Opulent kitchen interior, rich textures, theatrical lighting, grand design elements, royal colors, dramatic architectural features",
-  Björk:
-    "Ethereal kitchen interior, organic shapes, nature-inspired elements, Nordic design, ethereal lighting, avant-garde fixtures, surreal atmosphere",
-  "Andy Warhol":
-    "Pop art kitchen interior, screen print inspired patterns, bold primary colors, factory-style elements, artistic lighting, industrial chic",
+  "Nojoud AlRumaihi":
+    "Chic contemporary kitchen interior with subtle Middle Eastern architectural elements, minimalist design, neutral tones, luxurious materials, arabesque accents, elegant lighting, sophisticated ambiance",
+  "Yara Namlah":
+    "Modern eclectic kitchen interior with Middle Eastern fusion touches, vibrant colours, artistic decor, blend of traditional Arabian and contemporary elements, personalised touches, warm lighting, inviting atmosphere",
+  "Hala Abdallah":
+    "Sleek minimalist kitchen interior with modern Arabic influences, clean lines, monochromatic palette, high-end appliances, understated Middle Eastern elegance, ambient lighting, serene environment",
+  "Joelle Mardinian":
+    "Glamorous kitchen interior with luxe Middle Eastern details, opulent finishes, bold colours, statement lighting fixtures, arabesque patterns, blend of classic Arabian and modern styles, vibrant energy",
+  "Waad Alhammadi":
+    "Bohemian chic kitchen interior with Arabian accents, earthy tones, natural materials, Middle Eastern-inspired decor, artistic elements, traditional lantern lighting, relaxed and inviting vibe",
+  "Ahmad Daabas":
+    "Sophisticated masculine kitchen interior with contemporary Middle Eastern elements, dark tones, industrial elements, sleek surfaces, minimalist Arabic design, ambient lighting, modern urban feel",
+  "Ahmed El-Sayed":
+    "Contemporary urban kitchen interior with modern Arabic flair, bold colours, creative layouts, Middle Eastern-inspired fixtures, modern appliances, dynamic lighting, energetic atmosphere",
+};
+
+const celebrityHashtags = {
+  "Nojoud AlRumaihi": ["#MinimalistLuxury", "#ModernArabic"],
+  "Yara Namlah": ["#EclecticModern", "#ArtisticFusion"],
+  "Hala Abdallah": ["#MinimalistChic", "#ModernElegance"],
+  "Joelle Mardinian": ["#GlamourLuxe", "#OpulentModern"],
+  "Waad Alhammadi": ["#BohoChic", "#EarthyLuxe"],
+  "Ahmad Daabas": ["#IndustrialChic", "#ModernMasculine"],
+  "Ahmed El-Sayed": ["#UrbanContemporary", "#BoldModern"],
 };
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -69,34 +70,52 @@ export default function ImageGenerator() {
     setButtonText("Brewing your image ☕ ...");
     setStatus("starting");
 
-    try {
-      const response = await fetch("/api/predictions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ prompt }),
-      });
+    const maxRetries = 3;
+    let currentTry = 0;
 
-      const data = await response.json();
-      console.log("Response from API:", data);
+    while (currentTry < maxRetries) {
+      try {
+        const response = await fetch("/api/predictions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ prompt }),
+        });
 
-      if (!response.ok) {
-        throw new Error(data.error || `HTTP error! status: ${response.status}`);
+        const data = await response.json();
+        console.log("Response from API:", data);
+
+        if (!response.ok) {
+          throw new Error(
+            data.error || `HTTP error! status: ${response.status}`
+          );
+        }
+
+        if (!data.output?.[0]) {
+          throw new Error("No image URL in response");
+        }
+
+        setImageUrl(data.output[0]);
+        setStatus("succeeded");
+        setLoading(false);
+        setButtonText("Generate Space ✨");
+        return;
+      } catch (error) {
+        currentTry++;
+        console.error(`Attempt ${currentTry} failed:`, error);
+
+        if (currentTry === maxRetries) {
+          console.error("All retries failed:", error);
+          setStatus(`Error: ${error.message}`);
+          setLoading(false);
+          setButtonText("Generate Space ✨");
+        } else {
+          const waitTime = Math.min(1000 * Math.pow(2, currentTry), 10000);
+          setStatus(`Retrying... (attempt ${currentTry + 1}/${maxRetries})`);
+          await sleep(waitTime);
+        }
       }
-
-      if (!data.output?.[0]) {
-        throw new Error("No image URL in response");
-      }
-
-      setImageUrl(data.output[0]);
-      setStatus("succeeded");
-    } catch (error) {
-      console.error("Error generating image:", error);
-      setStatus(`Error: ${error.message}`);
-    } finally {
-      setLoading(false);
-      setButtonText("Generate Space ✨");
     }
   };
 
@@ -155,37 +174,50 @@ export default function ImageGenerator() {
         {/* Controls */}
         <div className="glass-panel p-6">
           <div className="flex flex-col items-center justify-center gap-4">
-            <div className="flex items-center gap-3">
-              <span className="text-white/60">In the style of</span>
-              <button
-                onClick={cycleCelebrity}
-                className="px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 transition-all text-white border border-white/20">
-                {celebrities[celebrityIndex]}
-              </button>
-              <button
-                onClick={randomizeOptions}
-                className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-all text-white border border-white/20"
-                title="Randomize">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 20 20"
-                  fill="none"
-                  className="w-5 h-5">
-                  <g clipPath="url(#clip0_21_2)">
-                    <path
-                      d="M11 0C11.7956 0 12.5587 0.31607 13.1213 0.87868C13.6839 1.44129 14 2.20435 14 3V6H17C17.7956 6 18.5587 6.31607 19.1213 6.87868C19.6839 7.44129 20 8.20435 20 9V17C20 17.7956 19.6839 18.5587 19.1213 19.1213C18.5587 19.6839 17.7956 20 17 20H9C8.20435 20 7.44129 19.6839 6.87868 19.1213C6.31607 18.5587 6 17.7956 6 17V14H3C2.20435 14 1.44129 13.6839 0.87868 13.1213C0.31607 12.5587 0 11.7956 0 11L0 3C0 2.20435 0.31607 1.44129 0.87868 0.87868C1.44129 0.31607 2.20435 0 3 0L11 0ZM17 8H9C8.75507 8.00003 8.51866 8.08996 8.33563 8.25272C8.15259 8.41547 8.03566 8.63975 8.007 8.883L8 9V17C8.00003 17.2449 8.08996 17.4813 8.25272 17.6644C8.41547 17.8474 8.63975 17.9643 8.883 17.993L9 18H17C17.2449 18 17.4813 17.91 17.6644 17.7473C17.8474 17.5845 17.9643 17.3603 17.993 17.117L18 17V9C18 8.75507 17.91 8.51866 17.7473 8.33563C17.5845 8.15259 17.3603 8.03566 17.117 8.007L17 8ZM10 15C10.2652 15 10.5196 15.1054 10.7071 15.2929C10.8946 15.4804 11 15.7348 11 16C11 16.2652 10.8946 16.5196 10.7071 16.7071C10.5196 16.8946 10.2652 17 10 17C9.73478 17 9.48043 16.8946 9.29289 16.7071C9.10536 16.5196 9 16.2652 9 16C9 15.7348 9.10536 15.4804 9.29289 15.2929C9.48043 15.1054 9.73478 15 10 15ZM16 15C16.2652 15 16.5196 15.1054 16.7071 15.2929C16.8946 15.4804 17 15.7348 17 16C17 16.2652 16.8946 16.5196 16.7071 16.7071C16.5196 16.8946 16.2652 17 16 17C15.7348 17 15.4804 16.8946 15.2929 16.7071C15.1054 16.5196 15 16.2652 15 16C15 15.7348 15.1054 15.4804 15.2929 15.2929C15.4804 15.1054 15.7348 15 16 15ZM13 12C13.2652 12 13.5196 12.1054 13.7071 12.2929C13.8946 12.4804 14 12.7348 14 13C14 13.2652 13.8946 13.5196 13.7071 13.7071C13.5196 13.8946 13.2652 14 13 14C12.7348 14 12.4804 13.8946 12.2929 13.7071C12.1054 13.5196 12 13.2652 12 13C12 12.7348 12.1054 12.4804 12.2929 12.2929C12.4804 12.1054 12.7348 12 13 12ZM11.117 2.007L11 2H3C2.75507 2.00003 2.51866 2.08996 2.33563 2.25272C2.15259 2.41547 2.03566 2.63975 2.007 2.883L2 3V11C2.00003 11.2449 2.08996 11.4813 2.25272 11.6644C2.41547 11.8474 2.63975 11.9643 2.883 11.993L3 12H6V9C6 8.20435 6.31607 7.44129 6.87868 6.87868C7.44129 6.31607 8.20435 6 9 6H12V3C12 2.75507 11.91 2.51866 11.7473 2.33563C11.5845 2.15259 11.3603 2.03566 11.117 2.007ZM10 9C10.2652 9 10.5196 9.10536 10.7071 9.29289C10.8946 9.48043 11 9.73478 11 10C11 10.2652 10.8946 10.5196 10.7071 10.7071C10.5196 10.8946 10.2652 11 10 11C9.73478 11 9.48043 10.8946 9.29289 10.7071C9.10536 10.5196 9 10.2652 9 10C9 9.73478 9.10536 9.48043 9.29289 9.29289C9.48043 9.10536 9.73478 9 10 9ZM16 9C16.2652 9 16.5196 9.10536 16.7071 9.29289C16.8946 9.48043 17 9.73478 17 10C17 10.2652 16.8946 10.5196 16.7071 10.7071C16.5196 10.8946 16.2652 11 16 11C15.7348 11 15.4804 10.8946 15.2929 10.7071C15.1054 10.5196 15 10.2652 15 10C15 9.73478 15.1054 9.48043 15.2929 9.29289C15.4804 9.10536 15.7348 9 16 9ZM4.513 8.993C4.77822 8.993 5.03257 9.09836 5.22011 9.28589C5.40764 9.47343 5.513 9.72778 5.513 9.993C5.513 10.2582 5.40764 10.5126 5.22011 10.7001C5.03257 10.8876 4.77822 10.993 4.513 10.993C4.24778 10.993 3.99343 10.8876 3.80589 10.7001C3.61836 10.5126 3.513 10.2582 3.513 9.993C3.513 9.72778 3.61836 9.47343 3.80589 9.28589C3.99343 9.09836 4.24778 8.993 4.513 8.993ZM4.513 5.993C4.77822 5.993 5.03257 6.09836 5.22011 6.28589C5.40764 6.47343 5.513 6.72778 5.513 6.993C5.513 7.25822 5.40764 7.51257 5.22011 7.70011C5.03257 7.88764 4.77822 7.993 4.513 7.993C4.24778 7.993 3.99343 7.88764 3.80589 7.70011C3.61836 7.51257 3.513 7.25822 3.513 6.993C3.513 6.72778 3.61836 6.47343 3.80589 6.28589C3.99343 6.09836 4.24778 5.993 4.513 5.993ZM4.513 2.993C4.77822 2.993 5.03257 3.09836 5.22011 3.28589C5.40764 3.47343 5.513 3.72778 5.513 3.993C5.513 4.25822 5.40764 4.51257 5.22011 4.70011C5.03257 4.88764 4.77822 4.993 4.513 4.993C4.24778 4.993 3.99343 4.88764 3.80589 4.70011C3.61836 4.51257 3.513 4.25822 3.513 3.993C3.513 3.72778 3.61836 3.47343 3.80589 3.28589C3.99343 3.09836 4.24778 2.993 4.513 2.993ZM9.513 2.993C9.77822 2.993 10.0326 3.09836 10.2201 3.28589C10.4076 3.47343 10.513 3.72778 10.513 3.993C10.513 4.25822 10.4076 4.51257 10.2201 4.70011C10.0326 4.88764 9.77822 4.993 9.513 4.993C9.24778 4.993 8.99343 4.88764 8.80589 4.70011C8.61836 4.51257 8.513 4.25822 8.513 3.993C8.513 3.72778 8.61836 3.47343 8.80589 3.28589C8.99343 3.09836 9.24778 2.993 9.513 2.993Z"
-                      fill="white"
-                    />
-                  </g>
-                  <defs>
-                    <clipPath id="clip0_21_2">
-                      <rect width="20" height="20" fill="white" />
-                    </clipPath>
-                  </defs>
-                </svg>
-              </button>
+            <div className="flex flex-col items-center gap-3">
+              <div className="flex items-center gap-3">
+                <span className="text-white/60">In the style of</span>
+                <button
+                  onClick={cycleCelebrity}
+                  className="px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 transition-all text-white border border-white/20">
+                  {celebrities[celebrityIndex]}
+                </button>
+                <button
+                  onClick={randomizeOptions}
+                  className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-all text-white border border-white/20"
+                  title="Randomize">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 20 20"
+                    fill="none"
+                    className="w-5 h-5">
+                    <g clipPath="url(#clip0_21_2)">
+                      <path
+                        d="M11 0C11.7956 0 12.5587 0.31607 13.1213 0.87868C13.6839 1.44129 14 2.20435 14 3V6H17C17.7956 6 18.5587 6.31607 19.1213 6.87868C19.6839 7.44129 20 8.20435 20 9V17C20 17.7956 19.6839 18.5587 19.1213 19.1213C18.5587 19.6839 17.7956 20 17 20H9C8.20435 20 7.44129 19.6839 6.87868 19.1213C6.31607 18.5587 6 17.7956 6 17V14H3C2.20435 14 1.44129 13.6839 0.87868 13.1213C0.31607 12.5587 0 11.7956 0 11L0 3C0 2.20435 0.31607 1.44129 0.87868 0.87868C1.44129 0.31607 2.20435 0 3 0L11 0ZM17 8H9C8.75507 8.00003 8.51866 8.08996 8.33563 8.25272C8.15259 8.41547 8.03566 8.63975 8.007 8.883L8 9V17C8.00003 17.2449 8.08996 17.4813 8.25272 17.6644C8.41547 17.8474 8.63975 17.9643 8.883 17.993L9 18H17C17.2449 18 17.4813 17.91 17.6644 17.7473C17.8474 17.5845 17.9643 17.3603 17.993 17.117L18 17V9C18 8.75507 17.91 8.51866 17.7473 8.33563C17.5845 8.15259 17.3603 8.03566 17.117 8.007L17 8ZM10 15C10.2652 15 10.5196 15.1054 10.7071 15.2929C10.8946 15.4804 11 15.7348 11 16C11 16.2652 10.8946 16.5196 10.7071 16.7071C10.5196 16.8946 10.2652 17 10 17C9.73478 17 9.48043 16.8946 9.29289 16.7071C9.10536 16.5196 9 16.2652 9 16C9 15.7348 9.10536 15.4804 9.29289 15.2929C9.48043 15.1054 9.73478 15 10 15ZM16 15C16.2652 15 16.5196 15.1054 16.7071 15.2929C16.8946 15.4804 17 15.7348 17 16C17 16.2652 16.8946 16.5196 16.7071 16.7071C16.5196 16.8946 16.2652 17 16 17C15.7348 17 15.4804 16.8946 15.2929 16.7071C15.1054 16.5196 15 16.2652 15 16C15 15.7348 15.1054 15.4804 15.2929 15.2929C15.4804 15.1054 15.7348 15 16 15ZM13 12C13.2652 12 13.5196 12.1054 13.7071 12.2929C13.8946 12.4804 14 12.7348 14 13C14 13.2652 13.8946 13.5196 13.7071 13.7071C13.5196 13.8946 13.2652 14 13 14C12.7348 14 12.4804 13.8946 12.2929 13.7071C12.1054 13.5196 12 13.2652 12 13C12 12.7348 12.1054 12.4804 12.2929 12.2929C12.4804 12.1054 12.7348 12 13 12ZM11.117 2.007L11 2H3C2.75507 2.00003 2.51866 2.08996 2.33563 2.25272C2.15259 2.41547 2.03566 2.63975 2.007 2.883L2 3V11C2.00003 11.2449 2.08996 11.4813 2.25272 11.6644C2.41547 11.8474 2.63975 11.9643 2.883 11.993L3 12H6V9C6 8.20435 6.31607 7.44129 6.87868 6.87868C7.44129 6.31607 8.20435 6 9 6H12V3C12 2.75507 11.91 2.51866 11.7473 2.33563C11.5845 2.15259 11.3603 2.03566 11.117 2.007ZM10 9C10.2652 9 10.5196 9.10536 10.7071 9.29289C10.8946 9.48043 11 9.73478 11 10C11 10.2652 10.8946 10.5196 10.7071 10.7071C10.5196 10.8946 10.2652 11 10 11C9.73478 11 9.48043 10.8946 9.29289 10.7071C9.10536 10.5196 9 10.2652 9 10C9 9.73478 9.10536 9.48043 9.29289 9.29289C9.48043 9.10536 9.73478 9 10 9ZM16 9C16.2652 9 16.5196 9.10536 16.7071 9.29289C16.8946 9.48043 17 9.73478 17 10C17 10.2652 16.8946 10.5196 16.7071 10.7071C16.5196 10.8946 16.2652 11 16 11C15.7348 11 15.4804 10.8946 15.2929 10.7071C15.1054 10.5196 15 10.2652 15 10C15 9.73478 15.1054 9.48043 15.2929 9.29289C15.4804 9.10536 15.7348 9 16 9ZM4.513 8.993C4.77822 8.993 5.03257 9.09836 5.22011 9.28589C5.40764 9.47343 5.513 9.72778 5.513 9.993C5.513 10.2582 5.40764 10.5126 5.22011 10.7001C5.03257 10.8876 4.77822 10.993 4.513 10.993C4.24778 10.993 3.99343 10.8876 3.80589 10.7001C3.61836 10.5126 3.513 10.2582 3.513 9.993C3.513 9.72778 3.61836 9.47343 3.80589 9.28589C3.99343 9.09836 4.24778 8.993 4.513 8.993ZM4.513 5.993C4.77822 5.993 5.03257 6.09836 5.22011 6.28589C5.40764 6.47343 5.513 6.72778 5.513 6.993C5.513 7.25822 5.40764 7.51257 5.22011 7.70011C5.03257 7.88764 4.77822 7.993 4.513 7.993C4.24778 7.993 3.99343 7.88764 3.80589 7.70011C3.61836 7.51257 3.513 7.25822 3.513 6.993C3.513 6.72778 3.61836 6.47343 3.80589 6.28589C3.99343 6.09836 4.24778 5.993 4.513 5.993ZM4.513 2.993C4.77822 2.993 5.03257 3.09836 5.22011 3.28589C5.40764 3.47343 5.513 3.72778 5.513 3.993C5.513 4.25822 5.40764 4.51257 5.22011 4.70011C5.03257 4.88764 4.77822 4.993 4.513 4.993C4.24778 4.993 3.99343 4.88764 3.80589 4.70011C3.61836 4.51257 3.513 4.25822 3.513 3.993C3.513 3.72778 3.61836 3.47343 3.80589 3.28589C3.99343 3.09836 4.24778 2.993 4.513 2.993ZM9.513 2.993C9.77822 2.993 10.0326 3.09836 10.2201 3.28589C10.4076 3.47343 10.513 3.72778 10.513 3.993C10.513 4.25822 10.4076 4.51257 10.2201 4.70011C10.0326 4.88764 9.77822 4.993 9.513 4.993C9.24778 4.993 8.99343 4.88764 8.80589 4.70011C8.61836 4.51257 8.513 4.25822 8.513 3.993C8.513 3.72778 8.61836 3.47343 8.80589 3.28589C8.99343 3.09836 9.24778 2.993 9.513 2.993Z"
+                        fill="white"
+                      />
+                    </g>
+                    <defs>
+                      <clipPath id="clip0_21_2">
+                        <rect width="20" height="20" fill="white" />
+                      </clipPath>
+                    </defs>
+                  </svg>
+                </button>
+              </div>
+              <div className="flex gap-2">
+                {celebrityHashtags[celebrities[celebrityIndex]].map(
+                  (hashtag) => (
+                    <span
+                      key={hashtag}
+                      className="text-sm font-medium px-4 py-1.5 rounded-full hashtag-pill bg-gradient-to-r from-rose-400/10 to-orange-300/10">
+                      {hashtag}
+                    </span>
+                  )
+                )}
+              </div>
             </div>
             <button
               onClick={handleGenerate}

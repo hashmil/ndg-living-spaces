@@ -63,3 +63,23 @@ body {
 .placeholder-icon:hover {
   opacity: 0.7;
 }
+
+.hashtag-gradient {
+  background: linear-gradient(45deg, #c084fc, #ec4899);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.hashtag-pill {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 107, 107, 0.15),
+    rgba(255, 217, 61, 0.15)
+  );
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  position: relative;
+  backdrop-filter: blur(4px);
+}
