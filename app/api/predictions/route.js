@@ -19,7 +19,7 @@ export async function POST(request) {
         output_format: "jpeg",
         loras: [
           {
-            path: "https://storage.googleapis.com/fal-flux-lora/f331225cc5394850a281837fd4be45de_pytorch_lora_weights.safetensors",
+            path: "https://storage.googleapis.com/fal-flux-lora/d8217a47d2f848988eee88c9aef942b2_pytorch_lora_weights.safetensors",
             scale: 1,
           },
         ],

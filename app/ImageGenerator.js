@@ -14,19 +14,19 @@ const celebrities = [
 
 const celebrityStyles = {
   "Nojoud AlRumaihi":
-    "Chic contemporary kitchen interior with subtle Middle Eastern architectural elements, minimalist design, neutral tones, luxurious materials, arabesque accents, elegant lighting, sophisticated ambiance",
+    "Chic contemporary living space interior with subtle Middle Eastern architectural elements, minimalist design, neutral tones, luxurious materials, arabesque accents, elegant lighting, sophisticated ambiance",
   "Yara Namlah":
-    "Modern eclectic kitchen interior with Middle Eastern fusion touches, vibrant colours, artistic decor, blend of traditional Arabian and contemporary elements, personalised touches, warm lighting, inviting atmosphere",
+    "Modern eclectic living space interior with Middle Eastern fusion touches, vibrant colours, artistic decor, blend of traditional Arabian and contemporary elements, personalised touches, warm lighting, inviting atmosphere",
   "Hala Abdallah":
-    "Sleek minimalist kitchen interior with modern Arabic influences, clean lines, monochromatic palette, high-end appliances, understated Middle Eastern elegance, ambient lighting, serene environment",
+    "Sleek minimalist living space interior with modern Arabic influences, clean lines, monochromatic palette, high-end appliances, understated Middle Eastern elegance, ambient lighting, serene environment",
   "Joelle Mardinian":
-    "Glamorous kitchen interior with luxe Middle Eastern details, opulent finishes, bold colours, statement lighting fixtures, arabesque patterns, blend of classic Arabian and modern styles, vibrant energy",
+    "Glamorous living spcae interior with luxe Middle Eastern details, opulent finishes, bold colours, statement lighting fixtures, arabesque patterns, blend of classic Arabian and modern styles, vibrant energy",
   "Waad Alhammadi":
-    "Bohemian chic kitchen interior with Arabian accents, earthy tones, natural materials, Middle Eastern-inspired decor, artistic elements, traditional lantern lighting, relaxed and inviting vibe",
+    "Bohemian chic living space interior with Arabian accents, earthy tones, natural materials, Middle Eastern-inspired decor, artistic elements, traditional lantern lighting, relaxed and inviting vibe",
   "Ahmad Daabas":
-    "Sophisticated masculine kitchen interior with contemporary Middle Eastern elements, dark tones, industrial elements, sleek surfaces, minimalist Arabic design, ambient lighting, modern urban feel",
+    "Sophisticated masculine living space interior with contemporary Middle Eastern elements, dark tones, industrial elements, sleek surfaces, minimalist Arabic design, ambient lighting, modern urban feel",
   "Ahmed El-Sayed":
-    "Contemporary urban kitchen interior with modern Arabic flair, bold colours, creative layouts, Middle Eastern-inspired fixtures, modern appliances, dynamic lighting, energetic atmosphere",
+    "Contemporary urban living space interior with modern Arabic flair, bold colours, creative layouts, Middle Eastern-inspired fixtures, modern appliances, dynamic lighting, energetic atmosphere",
 };
 
 const celebrityHashtags = {
@@ -64,7 +64,7 @@ export default function ImageGenerator() {
   const handleGenerate = async () => {
     const celebrity = celebrities[celebrityIndex];
     const celebrityStyle = celebrityStyles[celebrity];
-    const prompt = `a black TOK Dolce Nestle Gusto coffee machine, on a kitchen counter, ${celebrityStyle}, photorealistic, ultra-detailed, 8k`;
+    const prompt = `a small black TOK Dolce Nestle Gusto coffee machine, wide angle shot in a coffee corner in the living room, ${celebrityStyle}, photorealistic, ultra-detailed, 8k`;
 
     setLoading(true);
     setButtonText("Brewing your image ☕ ...");
