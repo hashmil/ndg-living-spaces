@@ -11,7 +11,7 @@ export async function POST(request) {
 
       const input = {
         prompt,
-        image_size: "square_hd",
+        image_size: "portrait_4_3",
         num_inference_steps: 28,
         guidance_scale: 3.5,
         num_images: 1,
@@ -19,7 +19,7 @@ export async function POST(request) {
         output_format: "jpeg",
         loras: [
           {
-            path: "https://storage.googleapis.com/fal-flux-lora/d8217a47d2f848988eee88c9aef942b2_pytorch_lora_weights.safetensors",
+            path: "https://storage.googleapis.com/fal-flux-lora/d3b35508292d491da4d2d3e3d9282571_pytorch_lora_weights.safetensors",
             scale: 1,
           },
         ],
