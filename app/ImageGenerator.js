@@ -127,8 +127,8 @@ export default function ImageGenerator() {
           <div
             className="glass-panel relative overflow-hidden"
             style={{
-              width: "min(100%, calc((100dvh - 12rem) * 9/16), 450px)",
-              aspectRatio: "9/16",
+              width: "min(100%, calc((100dvh - 12rem)), 450px)",
+              aspectRatio: "1/1",
             }}>
             {loading ? (
               <div className="absolute inset-0 flex flex-col items-center justify-between bg-black bg-opacity-50">
@@ -212,7 +212,7 @@ export default function ImageGenerator() {
                   (hashtag) => (
                     <span
                       key={hashtag}
-                      className="text-sm font-medium px-4 py-1.5 rounded-full hashtag-pill bg-gradient-to-r from-rose-400/10 to-orange-300/10">
+                      className="text-sm font-medium px-4 py-1.5 rounded-full bg-white/10 text-white border border-white/20 hover:bg-white/20 transition-all">
                       {hashtag}
                     </span>
                   )

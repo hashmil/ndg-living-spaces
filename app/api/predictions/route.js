@@ -11,7 +11,7 @@ export async function POST(request) {
 
       const input = {
         prompt,
-        image_size: "portrait_16_9",
+        image_size: "square_hd",
         num_inference_steps: 28,
         guidance_scale: 3.5,
         num_images: 1,
