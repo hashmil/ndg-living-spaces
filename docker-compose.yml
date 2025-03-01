@@ -1,0 +1,28 @@
+services:
+  app:
+    build:
+      context: .
+      args:
+        - FAL_API_KEY=${FAL_API_KEY}
+        - REPLICATE_API_TOKEN=${REPLICATE_API_TOKEN}
+        - NEXT_PUBLIC_PAGE_PASSWORD=${NEXT_PUBLIC_PAGE_PASSWORD}
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - FAL_API_KEY=${FAL_API_KEY}
+      - REPLICATE_API_TOKEN=${REPLICATE_API_TOKEN}
+      - NEXT_PUBLIC_PAGE_PASSWORD=${NEXT_PUBLIC_PAGE_PASSWORD}
+    restart: unless-stopped
+    container_name: ndg-living-spaces
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s 
+    networks:
+      - npm
+networks:
+  npm:
+    external: true

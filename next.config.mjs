@@ -1,6 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // Enable standalone output mode for Docker deployment
+  output: 'standalone',
   images: {
     remotePatterns: [
       {
